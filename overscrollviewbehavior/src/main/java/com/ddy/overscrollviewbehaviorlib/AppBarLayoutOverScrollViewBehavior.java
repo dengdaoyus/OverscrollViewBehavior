@@ -64,10 +64,25 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout parent, AppBarLayout child, View directTargetChild, View target, int nestedScrollAxes) {
         isAnimate = true;
-        Log.e("onNestedPreFling","onStartNestedScroll  ");
+        Log.e("onNestedPreFling", "onStartNestedScroll  ");
         return super.onStartNestedScroll(parent, child, directTargetChild, target, nestedScrollAxes);
     }
 
+    /**
+     * 2重写onNestedPreScroll()修改AppBarLayou滑动的顶部后的行为
+     * 3.上滑处理
+     下滑时目标View放大，AppBarLayout变高，如果此时用户不松开手指，直接上滑，需要目标View缩小，并且AppBarLayout变高。
+     默认情况下AppBarLayout的滑动是通过修改top和bottom实现的，所以上滑时，AppBarLayout为整体向上移动，高度不会发生改变
+     ，并且AppBarLayout下面的ScrollView也会向上滚动；而我们需要的是在AppBarLayout的高度大于原始高度时
+     ，减小AppBarLayout的高度，top不发生改变，并且AppBarLayout下面的ScrollView不会向上滚动。
+     AppBarLayout上滑时不会调用onNestedScroll()，所以只能在onNestedPreScroll()方法中修改，这也是为什么选择onNestedPreScroll()方法的原因
+     * @param coordinatorLayout
+     * @param child
+     * @param target
+     * @param dx
+     * @param dy
+     * @param consumed
+     */
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, int dx, int dy, int[] consumed) {
         if (!isRecovering) {
@@ -84,13 +99,21 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
     @Override
     public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, float velocityX, float velocityY) {
         if (velocityY > 100) {//当y速度>100,就秒弹回
-            Log.e("onNestedPreFling","onNestedPreFling  velocityY:  "+velocityY);
+            Log.e("onNestedPreFling", "onNestedPreFling  velocityY:  " + velocityY);
             isAnimate = false;
         }
         return super.onNestedPreFling(coordinatorLayout, child, target, velocityX, velocityY);
     }
 
 
+    /**
+     * 4.还原
+     * 当AppBarLayout处于越界时，如果用户松开手指，此时应该让目标View和AppBarLayout都还原到原始状态，重写onStopNestedScroll()方法
+     *
+     * @param coordinatorLayout
+     * @param abl
+     * @param target
+     */
     @Override
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, AppBarLayout abl, View target) {
         recovery(abl);
@@ -116,7 +139,7 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
         if (onProgressChangeListener != null) {
             float progress = Math.min((mLastScale - 1) / MAX_REFRESH_LIMIT, 1);//计算0~1的进度
             onProgressChangeListener.onProgressChange(progress, false);
-            Log.e("ssss","onProgressChange");
+            Log.e("ssss", "onProgressChange");
         }
     }
 
@@ -149,7 +172,7 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         isRecovering = false;
-                        if(onRefreshListener!=null){
+                        if (onRefreshListener != null) {
                             onRefreshListener.onRefresh();
                         }
                     }
@@ -168,7 +191,7 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
                 ViewCompat.setScaleY(mTargetView, 1f);
                 abl.setBottom(mParentHeight);
                 isRecovering = false;
-                if (onProgressChangeListener != null){
+                if (onProgressChangeListener != null) {
                     onProgressChangeListener.onProgressChange(0, true);
                 }
             }
@@ -176,6 +199,7 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
     }
 
     private onProgressChangeListener onProgressChangeListener;
+
     public interface onProgressChangeListener {
         /**
          * 范围 0~1
@@ -191,6 +215,7 @@ public class AppBarLayoutOverScrollViewBehavior extends AppBarLayout.Behavior {
     }
 
     private onRefreshListener onRefreshListener;
+
     public interface onRefreshListener {
         void onRefresh();
     }
