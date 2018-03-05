@@ -1,0 +1,3 @@
+<resources>
+    <string name="appbar_overscroll_behavior">com.ddy.overscrollviewbehaviorlib.AppBarLayoutOverScrollViewBehavior</string>
+</resources>
