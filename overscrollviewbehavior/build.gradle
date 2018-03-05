@@ -1,12 +1,9 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-
-
-
+    buildToolsVersion '26.0.2'
     defaultConfig {
-        applicationId "com.ddy.overscrollviewbehaviorlib"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
