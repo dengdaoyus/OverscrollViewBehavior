@@ -2,7 +2,7 @@
 自定义Behavior实现AppBarLayout越界弹性效果，下拉放大头部View
 
 # Preview
-<img src="gif/over.gif" />
+<img src="gif/over.gif" /> <img src="gif/EasyBehavior.gif" />
 
 1.获取越界时需要改变尺寸的View 
 
