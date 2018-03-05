@@ -4,7 +4,6 @@
 # Preview
 <img src="gif/over.gif" />
 
-
 1.获取越界时需要改变尺寸的View 
 
 布局时会调用onLayoutChild()，所以在该方法中可获取需要改变尺寸的View，可以使用View的findViewWithTag方法获取指定的View，并初始化属性。 
